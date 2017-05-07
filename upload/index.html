@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>上传视频</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script src="http://live-cdn.baijiacloud.com/js-sdk/0.0.163/uploader/VideoUploader.js"></script>
+
+    <div class="bjy-demo">
+        <div class="button upload-wrapper add-file-button">
+            <input type="file">
+            上传新视频
+        </div>
+
+        <div class="button btn-stop">
+            停止上传
+        </div>
+
+        <div class="button btn-continue">
+            继续上传
+        </div>
+    </div>
+
+    <script>
+        var uploader = new BJY.VideoUploader({
+            mainElement: $('input[type="file"]'),
+            ignoreError: true,
+            name: '',
+            multiple: true,
+            getUploadUrl: function (data) {
+                return $.ajax({
+                    url: 'http://www.baijiacloud.com/default/video_demo/getUploadUrl',
+                    type: 'post',
+                    data: {
+                        file_name: data.videoName,
+                        definition: 1
+                    }
+                })
+                .then(function (response) {
+                    var result = response.data;
+                    return {
+                        id: result.video_id,
+                        url: result.upload_url
+                    };
+                });
+            },
+            getResumeUploadUrl: function (data) {
+                return $.ajax({
+                    url: 'http://www.baijiacloud.com/default/video_demo/getResumeUploadUrl',
+                    type: 'post',
+                    data: {
+                        video_id: data.uploadId
+                    }
+                })
+                .then(function (response) {
+                    var result = response.data;
+                    if (!result) {
+                        alert(response.msg);
+                        return;
+                    }
+                    return {
+                        fid: result.video_id,
+                        id: result.video_id,
+                        url: result.upload_url,
+                        uploaded: result.upload_size
+                    };
+                });
+            },
+            onFileChange: function (files) {
+                var currentFiles = uploader.currentFiles;
+                if (!currentFiles.length) {
+                    return;
+                }
+
+                if (!uploader.validateFiles(currentFiles)) {
+                    uploader.reset();
+                    return;
+                }
+                var itemHTML = '<div class="item-list">'
+
+                $.each(
+                    currentFiles,
+                    function (index, file) {
+                        itemHTML += '<div class="item">'
+                            + '<span class="item-text item-name">'
+                            + file.videoName
+                            + '</span>'
+                            + '<span class="item-text item-status">等待上传</span>'
+                            + ' </div>';
+                        uploader.autoUpload(file);
+                    }
+                );
+
+                itemHTML += '</div>';
+                $(itemHTML).insertAfter($('.bjy-demo'))
+            },
+            onUploadStart: function (data) {
+                console.log('onUploadStart', data.fileItem);
+            },
+            onUploadProgress: function (data) {
+                $('.item')
+                .eq(data.fileItem.index)
+                .find('.item-status').html('上传' + data.percent);
+            },
+            onUploadSuccess: function (data) {
+                console.log('onUploadSuccess', data.fileItem);
+                $('.item')
+                .eq(data.fileItem.index)
+                .find('.item-status').html('上传成功');
+            },
+            onChunkUploadError: function (data) {
+                alert('上传错误，请重新上传');
+            },
+            onUploadError: function (data) {
+                alert('上传错误，请重新上传');
+                $('.item')
+                .eq(data.fileItem.index)
+                .find('.item-status').html('上传失败');
+            },
+            onUploadComplete: function (data) {
+            },
+            onError: function (data) {
+                alert(data.content);
+            }
+        });
+        $('.btn-stop').click(function () {
+            // uploader.stopFile 传入上传的 index 可以停止上传
+            // uploader.stopFile(0);
+            for (var i = 0; i < uploader.currentFiles.length; i++){
+                uploader.stopFile(i);
+            }
+        });
+        $('.btn-continue').click(function () {
+            // 继续上传
+            // var data = uploader.currentFiles[0];
+            // uploader.resumeUpload(data);
+            for (var i = 0; i < uploader.currentFiles.length; i++){
+                var data = uploader.currentFiles[i];
+                uploader.resumeUpload(data);
+            }
+        });
+    </script>
+
+    <div class="bjy-desc">
+        <h3> VideoUploader 的相关配置：</h3>
+
+        <p> {jQuery} mainElement 主元素，即文件输入框元素</p>
+        <p> {string} name 传给后端的 name</p>
+        <p> {Function} getUploadUrl promise 返回 { video_id: '', upload_url: '' }</p>
+        <p> {Function} getResumeUploadUrl promise 返回 { uploaded: number, id: '', url: '' }</p>
+        <p> {Function} onError 错误处理</p>
+
+        <p> {boolean?} useChunk 是否分片上传</p>
+        <p> {number?} maxSize 上传文件的最大尺寸</p>
+        <p> {string?} maxSizeError 超过上传文件的最大尺寸的错误信息</p>
+        <p> {number?} resumeExpireTime 本地记录的分片信息的过期时间，默认是一天之后过期</p>
+        <p> {number?} resumeUploadMaxCount 获取续传数据的最大尝试次数</p>
+        <p> {number?} chunkUploadMaxCount 分片上传的最大尝试次数</p>
+        <p> {Function?} validateVideo 校验视频，比如同时上传的最大数量，或者是否重复上传</p>
+        <p> {Function?} isChunkUploadSuccess 判断分片是否上传成功，这属于业务逻辑</p>
+        <p> {Function?} onResumeUploadWait 拉取到服务器的续传数据前，可能需要等待一段时间</p>
+        <p> {Function?} onResumeUploadCancel 拉取不到服务器的续传数据，则会自动取消</p>
+        <p> {Function?} onFileChange 选择文件之后触发</p>
+        <p> {Function?} onUploadStart 开始上传的时候触发</p>
+        <p> {Function?} onUploadProgress 获取文件的上传进度</p>
+        <p> {Function?} onUploadSuccess 文件上传成功的时候触发</p>
+        <p> {Function?} onUploadError 文件上传失败</p>
+        <p> {Function?} onChunkUploadSuccess 分片上传成功</p>
+        <p> {Function?} onChunkUploadError 分片上传失败</p>
+        <p> {Function?} onUploadComplete 文件上传完成（无论上传成功还是失败之后）触发</p>
+    </div>
+
+    <style type="text/css">
+        .bjy-desc {
+            width: 600px;
+            position: absolute;
+            right: 0;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .bjy-demo {
+            width: 500px;
+            float: left;
+        }
+        .bjy-demo .button {
+            background-color: #37A4F5;
+            display: inline-block;
+            color: #fff;
+            padding: 10px 15px;
+            vertical-align: top;
+        }
+        .bjy-demo .upload-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        .bjy-demo .upload-wrapper object,
+        .bjy-demo .upload-wrapper input[type="file"] {
+            opacity: 0;
+            filter: alpha(opacity=0);
+            cursor: pointer;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        .item-list {
+            font-size: 14px;
+            color: #2e5580;
+            padding: 10px;
+            display: block;
+            float: left;
+            width: 100%;
+        }
+        .item-name {
+            display: inline-block;
+            margin-right: 20px;
+        }
+    </style>
+</body>
+</html>
