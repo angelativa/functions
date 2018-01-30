@@ -1,2 +1,2 @@
-const is = (type, val) => val instanceof type
-module.exports = is
+const is = (type, val) => val instanceof type;
+module.exports = is;
