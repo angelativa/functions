@@ -1,27 +1,45 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
 	(global.protoType = factory());
 }(this, (function () { 'use strict';
 
-const getType = x => {
-  // return Object.prototype.toString.call(x).toLowerCase().slice(8, -1);
-  return x === undefined ? 'undefined' : x === null ? 'null' : x.constructor.name.toLowerCase();
+const isNil = val => val === undefined || val === null;
+const isFunction = val => typeof val === 'function';
+const isLikeArray = val => {
+  try {
+    return [...val], true;
+  } catch (e) {
+    return false;
+  }
 };
-Yox.validate = function (prop, propTypes) {
+Yox.validate = function (props, propTypes) {
+  let result = {};
   Yox.object.each(propTypes, function (rules, key) {
-    let { type } = rules;
-    console.log(getType(prop[key]), type);
-    if (getType(prop[key]) === type) {}
+    let { type, value, required } = rules;
+    let target = props[key];
+    if (isNil(target) && type) {
+      if (type === PropTypes.array && isLikeArray(target)) {
+        result[key] = target;
+      }
+    } else if (required) {
+      logger.warn(`"${key}" prop is not found.`);
+    } else if (value) {
+      if (isFunction(type)) {
+        result[key] = value;
+      } else {
+        result[key] = isFunction(value) ? value(props) : value;
+      }
+    }
   });
+  console.log(result);
+  return result;
 };
 
-let YoxPropTypes = {
+let PropTypes = {
   array: 'array'
 };
 
-window.YoxPropTypes = YoxPropTypes;
+window.PropTypes = PropTypes;
 
-return YoxPropTypes;
+return PropTypes;
 
 })));
