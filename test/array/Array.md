@@ -6,6 +6,7 @@ Array 对象属性
 Array 对象方法
 
     Array.from()
+    Array.from({length: n} , (item, i) => {})
     从一个类似数组或可迭代对象中创建一个新的数组实例
 
     Array.isArray()
