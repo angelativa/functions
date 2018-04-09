@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
+
         html, body {
             margin: 0;
             padding: 0;
@@ -12,6 +13,7 @@
             overflow: hidden;
             background: black;
         }
+
     </style>
 
 </head>
@@ -20,8 +22,20 @@
 
     <script src="star.js"></script>
     <script>
-        var CanvasStar = new CanvasStar;
-        CanvasStar.init();
+        new StarCurtain({
+            el: '#canvas',
+            width: 1480,
+            height: 1000,
+            starCount: 250,
+            starConfig: {
+                fillStyle: 'rgba(255, 255, 255, 0.5)',
+                shadowBlur: 2,
+                radius: 4,
+                moveDistance: 1,
+                shadowColor: '#fff',
+                strokeStyle: '#fff',
+            }
+        });
     </script>
 </body>
 </html>
