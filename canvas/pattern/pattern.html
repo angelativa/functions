@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>pattern</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        canvas {
+            background: black;
+        }
+        .wrapper {
+            position: relative;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div id="radios">
+        <input type="radio" id="repeat" name="pattern"> repeat
+        <input type="radio" id="repeat-x" name="pattern"> repeat-x
+        <input type="radio" id="repeat-y" name="pattern"> repeat-y
+        <input type="radio" id="no-repeat" name="pattern"> no-repeat
+    </div>
+    <div class="wrapper">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script src="pattern.js"></script>
+    <script>
+    </script>
+</body>
+</html>

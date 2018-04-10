@@ -7,6 +7,7 @@
     var glassPanel = document.getElementById('glass-panel');
     var glassPanel2 = document.getElementById('glass-panel2');
     var glassPanel3 = document.getElementById('glass-panel3');
+
     var ctx = canvas.getContext('2d');
     var paused = true;
 

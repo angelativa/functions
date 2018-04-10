@@ -5,6 +5,10 @@
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
 
+    var snapshotButton = document.getElementById('snapshot');
+    var snapshotImage = document.getElementById('snapshot-image');
+
+
     var style = {
         radius: 100,
         strokeStyle: '#fff',
@@ -93,12 +97,17 @@
 
     function drawClick() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         drawCircle();
         drawNumerals();
         drawCenter();
         drawHeaders();
+
+        canvas.style.display = 'none';
+        snapshotImage.src = canvas.toDataURL('image/jpeg', 0.2);
+        snapshotImage.style.display = 'block';
     }
 
-    setInterval(drawClick, 1000);
+    var loop = setInterval(drawClick, 1000);
 
 })();

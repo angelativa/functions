@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>click</title>
+    <title>gradients</title>
     <style>
         html, body {
             margin: 0;
@@ -10,25 +10,25 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            padding: 10px;
+            position: relative;
         }
 
         canvas {
             background: black;
         }
-
-        #snapshot-image {
-            display: none;
+        .wrapper {
+            position: relative;
         }
 
     </style>
 
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    <img id="snapshot-image">
-
-    <script src="click.js"></script>
+    <div class="wrapper">
+        <canvas id="canvas1"></canvas>
+        <canvas id="canvas2"></canvas>
+    </div>
+    <script src="gradients.js"></script>
     <script>
     </script>
 </body>
