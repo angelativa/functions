@@ -180,6 +180,7 @@
     };
 
     function animate() {
+
         // 清除画布
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
