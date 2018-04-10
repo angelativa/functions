@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bouncing ball</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #glass-panel,
+        #glass-panel2,
+        #glass-panel3 {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 100%;
+            background: white;
+        }
+        #glass-panel2 {
+            left: 200px;
+            top: 200px;
+        }
+        #glass-panel3 {
+            left: 100px;
+            top: 100px;
+        }
+        #button {
+            width: 100px;
+            height: 40px;
+            background: #000;
+            color: #fff;
+            text-align: center;
+            line-height: 40px;
+            outline: none;
+        }
+        canvas {
+            background: black;
+        }
+        .wrapper {
+            position: relative;
+        }
+
+    </style>
+
+</head>
+<body>
+    <button id="button">
+        开始
+    </button>
+
+    <div class="wrapper">
+        <div id="glass-panel"></div>
+        <div id="glass-panel2"></div>
+        <div id="glass-panel3"></div>
+
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script src="bouncingBall.js"></script>
+    <script>
+    </script>
+</body>
+</html>
