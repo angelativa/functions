@@ -26,7 +26,6 @@
         dealPattern('no-repeat')
     };
 
-
     function dealPattern(str) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         var pattern = ctx.createPattern(image, str);
