@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        mvvm
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div id='app'>
+        <h3>姓名</h3>
+        <p>{{name}}</p>
+        <h3>年龄</h3>
+        <p>{{age}}</p>
+    </div>
+
+    <script>
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+
+                var options = {
+                    el: '#app',
+                    data: {
+                        name: 'tiva',
+                        age: 30
+                    }
+                };
+                var instance = new Yox(options);
+                setTimeout(function () {
+                    options.data.name = 'musicode';
+                }, 4000);
+            },
+            false
+        );
+
+        class Yox {
+
+            constructor(options) {
+                var me = this;
+                var root = document.querySelector(options.el);
+
+                me.options = options;
+                me.observe(options.data);
+                me.compile(root)
+            }
+
+            observe(data){
+
+                Object.keys(data).forEach(function (key) {
+
+                    var observer = new Observer();
+                    data["_" + key] = data[key];
+
+                    Object.defineProperty(
+                        data,
+                        key,
+                        {
+                            get() {
+                                Observer.target && observer.addSubNode(Observer.target);
+                                return data['_' + key];
+                            },
+                            set(newVal) {
+                                observer.update(newVal);
+                                data['_' + key] = newVal;
+                            }
+                        }
+                    );
+                });
+            }
+
+            compile(node) {
+                var me = this;
+                [].forEach.call(
+                    node.childNodes,
+                    function (child) {
+
+                        if (!child.firstElementChild
+                            && /\{\{(.*)\}\}/.test(child.innerHTML)
+                        ) {
+
+                            Observer.target = child;
+                            var key = RegExp.$1.trim();
+                            child.innerHTML = child.innerHTML.replace(
+                                new RegExp('\\{\\{\\s*'+ key +'\\s*\\}\\}', 'gm'),
+                                me.options.data[key]
+                            );
+                            Observer.target = null;
+                        }
+                        else if (child.firstElementChild) {
+                            me.compile(child);
+                        }
+
+                    }
+                )
+            }
+        };
+
+        class Observer{
+
+            constructor(){
+                this.subNode = [];
+            }
+
+            addSubNode(node){
+
+                this.subNode.push(node);
+            }
+
+            update(newVal){
+
+                this.subNode.forEach(function (node) {
+                    node.innerHTML = newVal;
+                });
+
+            }
+
+        };
+    </script>
+</body>
+</html>

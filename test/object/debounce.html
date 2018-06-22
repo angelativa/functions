@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        debounce
+    </title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <input type="text" name="">
+    <script>
+
+        function debounce(fnc, delay) {
+            var timer = null;
+            console.log(1212)
+            return function (event) {
+
+                var context = this;
+                var args = arguments;
+
+                clearTimeout(timer);
+                timer = setTimeout(
+                    function () {
+                        fnc.apply(context, args);
+                    },
+                    delay
+                );
+            }
+        }
+
+        // 绑定监听
+        document
+        .querySelector("input")
+        .addEventListener(
+            'input',
+            debounce(
+                function(event) {
+                    console.log("change", event.target.value);
+                },
+                300
+            )
+        );
+    </script>
+</body>
+</html>

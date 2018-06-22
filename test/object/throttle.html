@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>throttle</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <div id="panel" style="width: 200px; height: 200px; background: #f90;">
+
+    </div>
+
+    <script type="text/javascript">
+
+        function throttle(fnc, time) {
+
+            var timer = null;
+            var startTime = new Date().getTime();
+            time = time || 500;
+
+            return function (event) {
+
+                clearTimeout(timer);
+
+                var context = this;
+                var args = arguments;
+                var now = new Date().getTime();
+
+                if (now - startTime > time) {
+                    startTime = now;
+                    fnc.apply(context, args);
+                }
+                else {
+                    timer = setTimeout(function () {
+                        fnc.apply(context, args);
+                    }, time);
+                }
+
+            }
+
+        }
+
+        document.querySelector('#panel')
+        .addEventListener(
+            'mousemove',
+            throttle(
+                function (event) {
+                    // console.log('回调函数', event)
+                },
+                1000
+            )
+        );
+    </script>
+
+</body>
+</html>
