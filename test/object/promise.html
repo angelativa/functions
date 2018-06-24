@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Promise</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <!-- <script type="text/javascript">
+        // 做饭
+        function cook(){
+            console.log('开始做饭。');
+            var promise = new Promise(function(resolve, reject){        //做一些异步操作
+                console.log('做饭完毕 0');
+                // setTimeout(function(){
+                //     resolve();
+                // }, 1000);
+                setTimeout(function(){
+                    reject('error');
+                }, 1000);
+            });
+            return promise;
+        }
+        cook()
+        .then(
+            function () {
+                console.log('做饭完毕 1');
+            },
+            function (error) {
+                console.log('做饭失败 1');
+            }
+        );
+        cook()
+        .catch(
+            function (error) {
+                console.log('做饭失败 2');
+            }
+        );
+    </script> -->
+    <script type="text/javascript">
+        // var request = new XMLHttpRequest();
+        // request.open('GET', 'http://img.baijiayun.com/video-signal/bebb38a32bc6311de0b57c7537d11364/all.json');
+        // request.onreadystatechange = function (event) {
+        //     console.log(event, 'onreadystatechange', request.readyState);
+        // };
+        // request.onload = function (event) {
+        //     console.log(event, 'onload', request.status);
+        //     if (request.status == 200) {
+        //         console.log('success');
+        //     }
+        // };
+        // request.onerror = function (event) {
+        //     console.log('onerror');
+        // };
+        // request.send();
+        // console.log(request);
+    </script>
+</body>
+</html>
