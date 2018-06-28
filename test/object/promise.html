@@ -3,8 +3,72 @@
 <head>
     <title>Promise</title>
     <meta charset="utf-8">
+    <style type="text/css">
+        #div1 {
+            width: 400px;
+            height: 400px;
+            background-color: #F00;
+        }
+        #div2 {
+            width: 300px;
+            height: 300px;
+            background-color: #0F0;
+        }
+        #div3 {
+            width: 200px;
+            height: 200px;
+            background-color: #00F;
+        }
+        #div4 {
+            width: 100px;
+            height: 100px;
+            background-color: #0fF;
+        }
+    </style>
 </head>
 <body>
+
+    <div id="div1">
+        <div id="div2">
+            <div id="div3">
+
+            </div>
+            <div id="div4">
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        // 1表示捕获阶段，2表示处于目标阶段，3表示冒泡阶段
+        var div1 = document.getElementById('div1');
+        div1.addEventListener('click', function (event) {
+            console.log('div1 click', event.eventPhase);
+        }, true);
+        div1.addEventListener('click', function (event) {
+            console.log('div1 click', event.eventPhase);
+        });
+        div2.addEventListener('click', function () {
+            console.log('div2 click');
+        }, true);
+        div2.addEventListener('click', function () {
+            console.log('div2 click');
+        });
+        div3.addEventListener('click', function () {
+            console.log('div3 click');
+        });
+        div3.addEventListener('click', function () {
+            console.log('div3 click');
+        }, true);
+        div4.addEventListener('click', function () {
+            console.log('div4 click');
+        });
+        div4.addEventListener('click', function () {
+            console.log('div4 click');
+        }, true);
+        document.addEventListener('click', function () {
+            console.log('document click');
+        });
+    </script>
     <!-- <script type="text/javascript">
         // 做饭
         function cook(){
@@ -54,5 +118,25 @@
         // request.send();
         // console.log(request);
     </script>
+    <!-- <script type="text/javascript">
+        var ws = new WebSocket("wss://echo.websocket.org");
+
+        ws.onopen = function(evt) {
+            console.log("Connection open ...", ws.readyState);
+            ws.send("Hello WebSockets!");
+        };
+        ws.onmessage = function(event) {
+            console.log("message ...", ws.readyState, event.data);
+            ws.close();
+        };
+        ws.onerror = function(event) {
+            console.log("error ...", ws.readyState, event);
+        };
+        ws.onclose = function(event) {
+            console.log("Connection closed ...", ws.readyState, event);
+        };
+
+        console.log(ws);
+    </script> -->
 </body>
 </html>
