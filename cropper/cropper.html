@@ -22,7 +22,7 @@
       height: 4px;
       background-color: #fff;
     }
-    
+
   </style>
 </head>
 <body>
@@ -40,7 +40,7 @@
       var file = this.files[0];
       var reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = function(e) { 
+      reader.onload = function(e) {
         var image = new Image();
         image.src = this.result;
         setTimeout(function () {
@@ -49,8 +49,8 @@
             image: image,
             boxWidth: 200,
             boxHeight: 120,
-            width: 600,
-            height: 600,
+            width: 400,
+            height: 400,
             output: {
               sizes: [
                 {
@@ -74,7 +74,7 @@
           })
         }, 1000);
       }
-      
+
     });
   </script>
 </body>
