@@ -421,18 +421,31 @@
           resolve();
           return;
         }
-        me.image = new Image();
-        me.image.src = me.imageUrl;
-        me.image.onload = function () {
+        if (typeof(me.imageUrl) == 'string') {
+          me.image = new Image();
+          me.image.src = me.imageUrl;
+          me.image.onload = function () {
+            me.ctx.drawImage(
+              me.image, 
+              0, 
+              0, 
+              me.canvasWidth, 
+              me.canvasHeight
+            );
+            resolve();
+          };
+        }
+        else {
+          me.image = me.imageUrl;
           me.ctx.drawImage(
-            me.image, 
+            me.imageUrl, 
             0, 
             0, 
             me.canvasWidth, 
             me.canvasHeight
           );
           resolve();
-        };
+        }
       });  
     },
 

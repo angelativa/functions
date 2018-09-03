@@ -26,41 +26,56 @@
   </style>
 </head>
 <body>
+  <form>
+    <input type="file">
+  </form>
   <div class="element"></div>
   <button>
     确认剪裁
   </button>
-
   <script src="./cropper.js"></script>
   <script>
-    var instance = new Cropper({
-      element: '.element',
-      image: './ex.jpg',
-      boxWidth: 200,
-      boxHeight: 120,
-      width: 600,
-      height: 600,
-      output: {
-        sizes: [
-          {
-            width: 30,
-            height: 30
-          },
-          {
-            width: 60,
-            height: 60
-          },
-          {
-            width: 150,
-            height: 150
-          }
-        ]
+    document.querySelector('input').addEventListener('change', function (event) {
+      var url = event.target.value;
+      var file = this.files[0];
+      var reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function(e) { 
+        var image = new Image();
+        image.src = this.result;
+        setTimeout(function () {
+          var instance = new Cropper({
+            element: '.element',
+            image: image,
+            boxWidth: 200,
+            boxHeight: 120,
+            width: 600,
+            height: 600,
+            output: {
+              sizes: [
+                {
+                  width: 30,
+                  height: 30
+                },
+                {
+                  width: 60,
+                  height: 60
+                },
+                {
+                  width: 150,
+                  height: 150
+                }
+              ]
+            }
+          });
+          document.getElementsByTagName('button')[0]
+          .addEventListener('click', function () {
+            instance.refresh(0, 0, true);
+          })
+        }, 1000);
       }
+      
     });
-    document.getElementsByTagName('button')[0]
-    .addEventListener('click', function () {
-      instance.refresh(0, 0, true);
-    })
   </script>
 </body>
 </html>
