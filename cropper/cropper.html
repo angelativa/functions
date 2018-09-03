@@ -1,0 +1,53 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .element {
+      text-align: center;
+      position: relative;
+
+    }
+    .cropper-box {
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: #000;
+    }
+    .cropper-point {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background-color: #fff;
+    }
+    img {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="element"></div>
+  <button>
+    确认剪裁
+  </button>
+
+  <script src="./cropper.js"></script>
+  <script>
+    var instance = new Cropper({
+      element: '.element',
+      image: './ex.jpg',
+      boxWidth: 200,
+      boxHeight: 120,
+      width: 600,
+      height: 600
+    });
+    document.getElementsByTagName('button')[0]
+    .addEventListener('click', function () {
+      instance.refresh(0, 0, true);
+    })
+  </script>
+</body>
+</html>
