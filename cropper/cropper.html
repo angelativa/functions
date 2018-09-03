@@ -22,10 +22,7 @@
       height: 4px;
       background-color: #fff;
     }
-    img {
-      width: 100px;
-      height: 100px;
-    }
+    
   </style>
 </head>
 <body>
@@ -42,7 +39,23 @@
       boxWidth: 200,
       boxHeight: 120,
       width: 600,
-      height: 600
+      height: 600,
+      output: {
+        sizes: [
+          {
+            width: 30,
+            height: 30
+          },
+          {
+            width: 60,
+            height: 60
+          },
+          {
+            width: 150,
+            height: 150
+          }
+        ]
+      }
     });
     document.getElementsByTagName('button')[0]
     .addEventListener('click', function () {

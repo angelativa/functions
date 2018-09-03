@@ -67,6 +67,36 @@
     },
 
 
+    getCropperImage: function () {
+      var me = this;
+      var rect = me.boxRect;
+      var outputSizes = me.outputSizes;
+      for(var i = 0; i < outputSizes.length; i++) {
+        var size = outputSizes[ i ];
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        canvas.width = size[ 'width'];
+        canvas.height = size[ 'height'];
+        ctx.drawImage(
+          me.image,
+          rect.startX,
+          rect.startY,
+          rect.width,
+          rect.height,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+        var imageElement = document.createElement('img');
+        imageElement.src = canvas.toDataURL('image/jpg', 1);
+        me.cantainer.append(imageElement);
+        canvas.remove();
+        me.refresh(0, 0, false);
+      }
+    
+    },
+
     init: function (options) {
       var me = this;
       me.cantainer = document.querySelector(options.element);
@@ -76,6 +106,7 @@
       me.imageUrl = options.image;
       me.boxWidth = options.boxWidth;
       me.boxHeight = options.boxHeight;
+      me.outputSizes = options.output.sizes;
 
       me.insertCanvas();
       me.insertImage().then(function () {
@@ -106,9 +137,8 @@
         var x = event.offsetX;
         var y = event.offsetY;
         var points = me.boxRect[ 'points' ];
-        var point = points[ 7 ];
-        if (Math.abs(point.x - x) < 10
-          && Math.abs(point.y - y) < 10
+        if (Math.abs(points[ 7 ].x - x) < 10
+          && Math.abs(points[ 7 ].y - y) < 10
         ) {
           me.startDragger = true;
           me.startDraggerPos = {
@@ -117,6 +147,76 @@
           };
           me.canvas.style.cursor = 'se-resize';
           return;
+        }
+        else if (Math.abs(points[ 6 ].x - x) < 10
+          && Math.abs(points[ 6 ].y - y) < 10
+        ) {
+          me.startDragger = true;
+          me.startDraggerPos = {
+            x: x,
+            y: y
+          };
+          me.canvas.style.cursor = 's-resize';
+        }
+        else if (Math.abs(points[ 5 ].x - x) < 10
+          && Math.abs(points[ 5 ].y - y) < 10
+        ) {
+          me.startDragger = true;
+          me.startDraggerPos = {
+            x: x,
+            y: y
+          };
+          me.canvas.style.cursor = 'sw-resize';
+        }
+        else if (Math.abs(points[ 4 ].x - x) < 10
+          && Math.abs(points[ 4 ].y - y) < 10
+        ) {
+          me.startDragger = true;
+          me.startDraggerPos = {
+            x: x,
+            y: y
+          };
+          me.canvas.style.cursor = 'e-resize';
+        }
+        else if (Math.abs(points[ 3 ].x - x) < 10
+          && Math.abs(points[ 3 ].y - y) < 10
+        ) {
+          me.startDragger = true;
+          me.startDraggerPos = {
+            x: x,
+            y: y
+          };
+          me.canvas.style.cursor = 'w-resize';
+        }
+        else if (Math.abs(points[ 2 ].x - x) < 10
+          && Math.abs(points[ 2 ].y - y) < 10
+        ) {
+          me.startDragger = true;
+          me.startDraggerPos = {
+            x: x,
+            y: y
+          };
+          me.canvas.style.cursor = 'ne-resize';
+        }
+        else if (Math.abs(points[ 1 ].x - x) < 10
+          && Math.abs(points[ 1 ].y - y) < 10
+        ) {
+          me.startDragger = true;
+          me.startDraggerPos = {
+            x: x,
+            y: y
+          };
+          me.canvas.style.cursor = 'n-resize';
+        }
+        else if (Math.abs(points[ 0 ].x - x) < 10
+          && Math.abs(points[ 0 ].y - y) < 10
+        ) {
+          me.startDragger = true;
+          me.startDraggerPos = {
+            x: x,
+            y: y
+          };
+          me.canvas.style.cursor = 'nw-resize';
         }
         else if (me.isPointInCropperBox(x, y)) {
           me.startDragger = true;
@@ -147,36 +247,88 @@
               me.boxWidth = boxWidth > me.canvasWidth ? me.canvasWidth : boxWidth;
               me.boxHeight = boxHeight > me.canvasHeight ? me.canvasHeight : boxHeight;
               me.refresh(0, 0);
+              me.startDraggerPos = {
+                x: x,
+                y: y
+              };
+              break;
+            case 's-resize': 
+              var boxHeight = me.boxHeight + deltaY;
+              me.boxHeight = boxHeight > me.canvasHeight ? me.canvasHeight : boxHeight;
+              me.refresh(0, 0);
+              me.startDraggerPos = {
+                x: x,
+                y: y
+              };
+              break;
+            case 'sw-resize': 
+              var boxWidth = me.boxWidth - deltaX;
+              var boxHeight = me.boxHeight + deltaY;
+              me.boxWidth = boxWidth > me.canvasWidth ? me.canvasWidth : boxWidth;
+              me.boxHeight = boxHeight > me.canvasHeight ? me.canvasHeight : boxHeight;
+              me.refresh(0, 0);
+              me.startDraggerPos = {
+                x: x,
+                y: y
+              };
+              break;
+            case 'e-resize': 
+              var boxWidth = me.boxWidth + deltaX;
+              me.boxWidth = boxWidth > me.canvasWidth ? me.canvasWidth : boxWidth;
+              me.refresh(0, 0);
+              me.startDraggerPos = {
+                x: x,
+                y: y
+              };
+              break;
+            case 'w-resize': 
+              var boxWidth = me.boxWidth - deltaX;
+              me.boxWidth = boxWidth > me.canvasWidth ? me.canvasWidth : boxWidth;
+              me.refresh(0, 0);
+              me.startDraggerPos = {
+                x: x,
+                y: y
+              };
+              break;
+            case 'ne-resize':
+              var boxWidth = me.boxWidth + deltaX;
+              var boxHeight = me.boxHeight - deltaY;
+              me.boxWidth = boxWidth > me.canvasWidth ? me.canvasWidth : boxWidth;
+              me.boxHeight = boxHeight > me.canvasHeight ? me.canvasHeight : boxHeight;
+              me.refresh(0, 0);
+              me.startDraggerPos = {
+                x: x,
+                y: y
+              };
+              break;
+            case 'n-resize':
+              var boxHeight = me.boxHeight - deltaY;
+              me.boxHeight = boxHeight > me.canvasHeight ? me.canvasHeight : boxHeight;
+              me.refresh(0, 0);
+              me.startDraggerPos = {
+                x: x,
+                y: y
+              };
+              break;
+            case 'nw-resize':
+              var boxWidth = me.boxWidth - deltaX;
+              var boxHeight = me.boxHeight - deltaY;
+              me.boxWidth = boxWidth > me.canvasWidth ? me.canvasWidth : boxWidth;
+              me.boxHeight = boxHeight > me.canvasHeight ? me.canvasHeight : boxHeight;
+              me.refresh(0, 0);
+              me.startDraggerPos = {
+                x: x,
+                y: y
+              };
               break;
           }
         }
       };
+
       me.canvas.onmouseup = function (event) {
         me.canvas.style.cursor = '';
         me.startDragger = false;
       };
-    },
-
-    getCropperImage: function () {
-      var me = this;
-      var rect = me.boxRect;
-      var canvas = me.canvas;
-      me.ctx.drawImage(
-        canvas,
-        rect.startX,
-        rect.startY,
-        rect.width,
-        rect.height,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-      
-      var imageElement = document.createElement('img');
-      imageElement.src = canvas.toDataURL('image/jpg', 1);
-      me.cantainer.append(imageElement);
-      me.refresh(0, 0, false);
     },
 
     drawCropperRect: function (x, y) {
