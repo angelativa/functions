@@ -70,7 +70,7 @@
 
     constructor: Cropper,
 
-    upload: function () {     
+    crop: function () {     
       var me = this;
       var src = me.imageList[0]; 
       var params = new FormData();
