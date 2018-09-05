@@ -74,12 +74,22 @@
   }
 
   function Cropper(options) {
+    options.version = '1';
     this.init(options);
   }
 
   Cropper.prototype = {
 
     constructor: Cropper,
+
+    dispose: function () {
+      
+      var me = this;
+      document.removeEventListener('mousemove', me.handlerMouseMove);
+      me.container.removeChild(me.canvas);
+      me = null;
+
+    },
 
     getData: function () {
       return dataURItoBlob(this.imageList[ this.imageList.length - 1 ]);
@@ -206,6 +216,7 @@
       me.insertImage()
       .then(function () {
         me.drawCropperRect();
+        me.getCropperImage();
       });
       me.bindEvent();
 
@@ -564,6 +575,6 @@
   };
 
   window.Cropper = Cropper;
-
+  
   return Cropper;
 })();

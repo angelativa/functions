@@ -36,7 +36,7 @@
   <div class="view-cropper"></div>
   <div class="view-images"></div>
   <button>
-    确认上传
+    销毁
   </button>
   <script src="./cropper.js"></script>
   <script>
@@ -81,7 +81,7 @@
 
           document.getElementsByTagName('button')[0]
           .addEventListener('click', function () {
-            instance.getData();
+            cropInstance.dispose();
           });
         }, 1000);
       }
