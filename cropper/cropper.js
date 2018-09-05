@@ -2,7 +2,7 @@
 
   'use strict';
 
-  'use strict'
+  var CHECKED_AREA_SIZE = 10;
 
   function extend(source, target) {
     var keys = Object.keys(source);
@@ -233,10 +233,10 @@
 
       var sourceImage = me.sourceImage;
       var boxRect = me.boxRect;
-      var boxMaxWidth = (sourceImage.sw - 10);
-      var boxMaxHeight = (sourceImage.sh - 10);
-      var boxMaxStartX = (sourceImage.sx + 5);
-      var boxMaxStartY = (sourceImage.sy + 5);
+      var boxMaxWidth = (sourceImage.sw - CHECKED_AREA_SIZE);
+      var boxMaxHeight = (sourceImage.sh - CHECKED_AREA_SIZE);
+      var boxMaxStartX = (sourceImage.sx + (CHECKED_AREA_SIZE / 2));
+      var boxMaxStartY = (sourceImage.sy + (CHECKED_AREA_SIZE / 2));
 
       var boxWidth = boxRect.width + offsetWidth;
       var boxHeight = boxWidth / radio;
@@ -246,7 +246,7 @@
       }
 
       // 根据宽高比算出盒子宽高
-      boxWidth = boxWidth < 10 ? 10 : boxWidth;
+      boxWidth = boxWidth < CHECKED_AREA_SIZE ? CHECKED_AREA_SIZE : boxWidth;
       if (boxWidth > boxMaxWidth) {
         boxWidth = boxMaxWidth;
         boxHeight = boxWidth / radio;
@@ -335,23 +335,23 @@
         var y = event.offsetY;
 
         var points = me.boxRect[ 'points' ];
-        if (Math.abs(points[ 3 ].x - x) < 10
-          && Math.abs(points[ 3 ].y - y) < 10
+        if (Math.abs(points[ 3 ].x - x) < CHECKED_AREA_SIZE
+          && Math.abs(points[ 3 ].y - y) < CHECKED_AREA_SIZE
         ) {
           me.cursorAction = 'se-resize';
         }
-        else if (Math.abs(points[ 2 ].x - x) < 10
-          && Math.abs(points[ 2 ].y - y) < 10
+        else if (Math.abs(points[ 2 ].x - x) < CHECKED_AREA_SIZE
+          && Math.abs(points[ 2 ].y - y) < CHECKED_AREA_SIZE
         ) {
           me.cursorAction = 'sw-resize';
         }
-        else if (Math.abs(points[ 1 ].x - x) < 10
-          && Math.abs(points[ 1 ].y - y) < 10
+        else if (Math.abs(points[ 1 ].x - x) < CHECKED_AREA_SIZE
+          && Math.abs(points[ 1 ].y - y) < CHECKED_AREA_SIZE
         ) {
           me.cursorAction = 'ne-resize';
         }
-        else if (Math.abs(points[ 0 ].x - x) < 10
-          && Math.abs(points[ 0 ].y - y) < 10
+        else if (Math.abs(points[ 0 ].x - x) < CHECKED_AREA_SIZE
+          && Math.abs(points[ 0 ].y - y) < CHECKED_AREA_SIZE
         ) {
           me.cursorAction = 'nw-resize';
         }
