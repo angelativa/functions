@@ -33,8 +33,8 @@
   <form>
     <input type="file">
   </form>
-  <div class="element"></div>
-  <div class="image-wrapper"></div>
+  <div class="view-cropper"></div>
+  <div class="view-images"></div>
   <button>
     确认上传
   </button>
@@ -50,14 +50,14 @@
         image.src = this.result;
         setTimeout(function () {
           
-          var instance = new Cropper({
-            element: '.element',
+          var cropInstance = new Cropper({
+            container: '.view-cropper',
+            imageWrapper: '.view-images',
             image: image,
-            imageElement: '.image-wrapper',
             // 这个根据 size 取比例 传一个初始的值
-            boxWidth: 200,
-            width: 400,
-            height: 400,
+            boxWidth: 60,
+            canvasWidth: 400,
+            canvasHeight: 400,
             sizes: [
               {
                 width: 30,
@@ -68,18 +68,20 @@
                 height: 60
               },
               {
-                width: 150,
-                height: 150
+                width: 90,
+                height: 90
               }
             ],
-            upload: function (data) {
-              console.log(data);
-            }
+            // 如果需要上传
+            // data: {
+            //   app_version: '1.1.0'
+            // },
+            // action: 'http://test-www.finstao.com/v1/upload/image',
           });
 
           document.getElementsByTagName('button')[0]
           .addEventListener('click', function () {
-            instance.crop();
+            instance.getData();
           });
         }, 1000);
       }
