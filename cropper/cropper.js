@@ -1,12 +1,17 @@
+(function () {
+
+  'use strict';
+
   var CHECKED_AREA_SIZE = 10;
+  var RATIO = window.devicePixelRatio;
 
   function extend(source, target) {
     var keys = Object.keys(source);
-    for(var i = 0, len = keys.length; i < len; i++) {
+    for (var i = 0, len = keys.length; i < len; i++) {
       var name = keys[ i ];
       target[ name ] = source[ name ];
     }
-    return target
+    return target;
   }
 
   function drawDashedLine(ctx, startX, startY, endX, endY, dashLength) {
@@ -19,10 +24,10 @@
       Math.sqrt(deltaX * deltaX + deltaY * deltaY) / dashLength
     );
 
-    for(var i = 0; i < numDashes; ++i) {
+    for (var i = 0; i < numDashes; ++i) {
       ctx[ i % 2 === 0 ? 'moveTo' : 'lineTo' ](
         startX + (deltaX / numDashes) * i,
-        startY + (deltaY / numDashes) * i,
+        startY + (deltaY / numDashes) * i
       );
     }
     ctx.stroke();
@@ -79,7 +84,7 @@
     constructor: Cropper,
 
     dispose: function () {
-      
+
       var me = this;
       document.removeEventListener('mousemove', me.handlerMouseMove);
       me.container.removeChild(me.canvas);
@@ -91,7 +96,7 @@
       return dataURItoBlob(this.imageList[ this.imageList.length - 1 ]);
     },
 
-    upload: function () {     
+    upload: function () {
       var me = this;
       var file = me.getData();
       var data = me.data;
@@ -102,26 +107,26 @@
       var params = new FormData();
       params.append('file', file);
       if (data && typeof(data) == 'object') {
-        for(var key in data) {
+        for (var key in data) {
           params.append(key, data[ key ]);
         }
       }
 
       return new Promise(function (resolve, reject) {
-        
+
         var xhr = new XMLHttpRequest();
         xhr.open(
-          'post', 
-          me.action, 
+          'post',
+          me.action,
           true
         );
-        
+
         xhr.send(params);
         xhr.onreadystatechange = function () {  // onReadyStateChange 事件
           if (xhr.readyState == 4) {  // 4 为完成
             if (xhr.status == 200) {  // 200 为成功
               resolve(JSON.parse(xhr.responseText));
-            } 
+            }
             else {
               reject(JSON.parse(xhr.responseText));
             }
@@ -143,19 +148,18 @@
       });
     },
 
-
     getCropperImage: function () {
       var me = this;
       var rect = me.boxRect;
       var sizesList = me.sizesList;
       me.imageList = [];
 
-      for(var i = 0; i < sizesList.length; i++) {
+      for (var i = 0; i < sizesList.length; i++) {
         var size = sizesList[ i ];
         var canvas = document.createElement('canvas');
         var ctx = canvas.getContext('2d');
-        canvas.width = size[ 'width' ];
-        canvas.height = size[ 'height' ];
+        canvas.width = size[ 'width' ] * RATIO;
+        canvas.height = size[ 'height' ] * RATIO;
 
         ctx.drawImage(
           me.image,
@@ -171,16 +175,11 @@
 
         var file = canvas.toDataURL('image/jpg', 1);
         me.imageList[ i ] = file;
-        var imageElement = me.imageElement.querySelectorAll('img')[ i ];
-        if (imageElement) {
-          imageElement.src = file;
-        }
-        else {
-          imageElement = document.createElement('img');
-          imageElement.src = file;
-          me.imageElement.append(imageElement);
-        }
-        
+        imageElement = document.createElement('img');
+        imageElement.src = file;
+        imageElement.style[ 'width' ] = size[ 'width' ];
+        imageElement.style[ 'height' ] = size[ 'height' ];
+        me.imageElement.append(imageElement);
         canvas.remove();
       }
 
@@ -199,7 +198,7 @@
       if (!me.imageElement) {
         throw new Error('most has imageElement');
       }
-    
+
       me.boxWidth = options.boxWidth || options.sizes[ 0 ].width;
       me.sizesList = options.sizes;
 
@@ -216,17 +215,17 @@
       });
       me.bindEvent();
 
-    },
+    },  
 
-    isPointInCropperBox(x, y) {
+    isPointInCropperBox: function (x, y) {
       var me = this;
       var rect = me.boxRect;
       var points = rect[ points ];
 
-      if (rect.startX < x
-        && x < (rect.startX + rect.width)
-        && rect.startY < y
-        && y < (rect.startY + rect.height)
+      if ((rect.startX / RATIO) < x
+        && x < ((rect.startX + rect.width) / RATIO)
+        && (rect.startY / RATIO) < y
+        && y < ((rect.startY + rect.height) / RATIO)
       ) {
         return true;
       }
@@ -235,21 +234,26 @@
 
     resizeBox: function (offsetX, offsetY, offsetWidth, offsetHeight) {
       
+      offsetX = offsetX * RATIO;
+      offsetY = offsetY * RATIO;
+      offsetWidth = offsetWidth * RATIO;
+      offsetHeight = offsetHeight * RATIO;
+      
       var me = this;
       var radio = me.radio;
 
       var sourceImage = me.sourceImage;
       var boxRect = me.boxRect;
-      var boxMaxWidth = (sourceImage.sw - CHECKED_AREA_SIZE);
-      var boxMaxHeight = (sourceImage.sh - CHECKED_AREA_SIZE);
-      var boxMaxStartX = (sourceImage.sx + (CHECKED_AREA_SIZE / 2));
-      var boxMaxStartY = (sourceImage.sy + (CHECKED_AREA_SIZE / 2));
+      var boxMaxWidth = sourceImage.sw;
+      var boxMaxHeight = sourceImage.sh;
+      var boxMaxStartX = sourceImage.sx;
+      var boxMaxStartY = sourceImage.sy;
 
       var boxWidth = boxRect.width + offsetWidth;
       var boxHeight = boxWidth / radio;
       if (offsetHeight && offsetHeight - offsetWidth > 0) {
-        var boxHeight = boxRect.height + offsetHeight;
-        var boxWidth = boxHeight * radio;
+        boxHeight = boxRect.height + offsetHeight;
+        boxWidth = boxHeight * radio;
       }
 
       // 根据宽高比算出盒子宽高
@@ -262,20 +266,21 @@
         boxHeight = boxMaxHeight;
         boxWidth = boxHeight * radio;
       }
-      
+
       var startX = boxRect.startX + offsetX;
       var startY = boxRect.startY + offsetY;
+
       startX = startX > boxMaxStartX ? startX : boxMaxStartX;
       startY = startY > boxMaxStartY ? startY : boxMaxStartY;
 
       startX = (startX + boxWidth) > (sourceImage.sx + sourceImage.sw)
-        ? sourceImage.sx + sourceImage.sw - boxWidth 
+        ? sourceImage.sx + sourceImage.sw - boxWidth
         : startX;
 
-      startY = (startY + boxHeight) > (sourceImage.sy + sourceImage.sh) 
-        ? sourceImage.sy + sourceImage.sh - boxHeight 
+      startY = (startY + boxHeight) > (sourceImage.sy + sourceImage.sh)
+        ? sourceImage.sy + sourceImage.sh - boxHeight
         : startY;
-          
+        
       me.boxRect[ 'startX' ] = startX;
       me.boxRect[ 'startY' ] = startY;
       me.boxRect[ 'width' ] = boxWidth;
@@ -287,21 +292,15 @@
       var me = this;
 
       me.handlerMouseMove = function (event) {
-        var x = event.offsetX;
-        var y = event.offsetY;
+        var x = event.pageX;
+        var y = event.pageY;
 
         if (me.cursorAction) {
           var deltaX = x - me.startDraggerPos.x;
           var deltaY = y - me.startDraggerPos.y;
-          var isOffsetX = Math.abs(deltaX) > Math.abs(deltaY);
 
           if (me.cursorAction == 'move') {
-            me.refresh(deltaX, deltaY, true);
-            me.startDraggerPos = {
-              x: x,
-              y: y
-            };
-            return;
+            me.resizeBox(deltaX, deltaY, 0, 0);
           }
           else if (me.cursorAction == 'se-resize') {
             me.resizeBox(0, 0, deltaX, deltaX);
@@ -323,44 +322,68 @@
         }
       };
 
+      me.handlerMouseUp = function (event) {
+        if (me.locked) {
+          me.canvas.style.cursor = '';
+          me.cursorAction = '';
+          me.locked = false;
+          document.removeEventListener('mousemove', me.handlerMouseMove);
+
+          if (event && me.canvas.style.cursor == 'move') {
+            var x = event.pageX;
+            var y = event.pageY;
+            me.startDraggerPos = {
+              x: x,
+              y: y
+            };
+          }
+        }
+      };
+
       me.canvas.onmousedown = function (event) {
-        var x = event.offsetX;
-        var y = event.offsetY;
         if (me.cursorAction) {
           me.startDraggerPos = {
-            x: x,
-            y: y
+            x: event.pageX,
+            y: event.pageY
           };
           me.locked = true;
           document.addEventListener('mousemove', me.handlerMouseMove);
-        } 
+        }
       };
 
       me.canvas.onmousemove = function (event) {
 
         var x = event.offsetX;
         var y = event.offsetY;
-
         var points = me.boxRect[ 'points' ];
-        if (Math.abs(points[ 3 ].x - x) < CHECKED_AREA_SIZE
-          && Math.abs(points[ 3 ].y - y) < CHECKED_AREA_SIZE
+        
+        if (Math.abs((points[ 3 ].x / RATIO) - x) < CHECKED_AREA_SIZE
+          && Math.abs((points[ 3 ].y / RATIO) - y) < CHECKED_AREA_SIZE
         ) {
-          me.cursorAction = 'se-resize';
+          if (!me.locked) {
+            me.cursorAction = 'se-resize';
+          }
         }
-        else if (Math.abs(points[ 2 ].x - x) < CHECKED_AREA_SIZE
-          && Math.abs(points[ 2 ].y - y) < CHECKED_AREA_SIZE
+        else if (Math.abs((points[ 2 ].x / RATIO) - x) < CHECKED_AREA_SIZE
+          && Math.abs((points[ 2 ].y) / RATIO - y) < CHECKED_AREA_SIZE
         ) {
-          me.cursorAction = 'sw-resize';
+          if (!me.locked) {
+            me.cursorAction = 'sw-resize';
+          }
         }
-        else if (Math.abs(points[ 1 ].x - x) < CHECKED_AREA_SIZE
-          && Math.abs(points[ 1 ].y - y) < CHECKED_AREA_SIZE
+        else if (Math.abs((points[ 1 ].x / RATIO) - x) < CHECKED_AREA_SIZE
+          && Math.abs((points[ 1 ].y) / RATIO - y) < CHECKED_AREA_SIZE
         ) {
-          me.cursorAction = 'ne-resize';
+          if (!me.locked) {
+            me.cursorAction = 'ne-resize';
+          }
         }
-        else if (Math.abs(points[ 0 ].x - x) < CHECKED_AREA_SIZE
-          && Math.abs(points[ 0 ].y - y) < CHECKED_AREA_SIZE
+        else if (Math.abs((points[ 0 ].x / RATIO) - x) < CHECKED_AREA_SIZE
+          && Math.abs((points[ 0 ].y) / RATIO - y) < CHECKED_AREA_SIZE
         ) {
-          me.cursorAction = 'nw-resize';
+          if (!me.locked) {
+            me.cursorAction = 'nw-resize';
+          }
         }
         else if (me.isPointInCropperBox(x, y)) {
           if (!me.locked) {
@@ -370,23 +393,7 @@
         me.canvas.style.cursor = me.cursorAction;
       };
 
-      document.onmouseup = function (event) {
-        if (me.locked) {
-          var x = event.offsetX;
-          var y = event.offsetY;
-          me.canvas.style.cursor = '';
-          me.cursorAction = '';
-          me.locked = false;
-          document.removeEventListener('mousemove', me.handlerMouseMove);
-
-          if (me.canvas.style.cursor == 'move') {
-            me.startDraggerPos = {
-              x: x,
-              y: y
-            };
-          }
-        }
-      };
+      document.addEventListener('mouseup', me.handlerMouseUp);
     },
 
     drawCropperRect: function (x, y) {
@@ -396,7 +403,7 @@
       var CropperColor = '#5C98EA';
 
       var radio = me.radio;
-      var boxWidth =  me.boxRect ? me.boxRect.width : me.boxWidth;
+      var boxWidth = me.boxRect ? me.boxRect.width : me.boxWidth * RATIO;
       var boxHeight = boxWidth * radio;
       var sourceImage = me.sourceImage;
 
@@ -408,27 +415,27 @@
         boxHeight = sourceImage.sh;
         boxWidth = boxHeight * radio;
       }
-
-      x = x ? x : 0;
-      y = y ? y : 0;
+      
+      x = x ? RATIO * x : 0;
+      y = y ? RATIO * y : 0;
 
       ctx.lineWidth = 1;
       ctx.strokeStyle = CropperColor;
       ctx.fillStyle = 'transparent';
-    
+
       var startX = me.boxRect ? me.boxRect.startX + x : sourceImage.sx + ((sourceImage.sw - boxWidth) / 2);
       var startY = me.boxRect ? me.boxRect.startY + y : sourceImage.sy + ((sourceImage.sh - boxHeight) / 2);
-      
+
       startX = startX > sourceImage.sx ? startX : sourceImage.sx;
       startY = startY > sourceImage.sy ? startY : sourceImage.sy;
 
       startX = (startX + boxWidth) > (sourceImage.sx + sourceImage.sw)
-        ? sourceImage.sx + sourceImage.sw - boxWidth 
+        ? sourceImage.sx + sourceImage.sw - boxWidth
         : startX;
-      startY = (startY + boxHeight) > (sourceImage.sy + sourceImage.sh) 
-        ? sourceImage.sy + sourceImage.sh - boxHeight 
+      startY = (startY + boxHeight) > (sourceImage.sy + sourceImage.sh)
+        ? sourceImage.sy + sourceImage.sh - boxHeight
         : startY;
-
+      
       ctx.save();
       // 绘制阴影
       ctx.beginPath();
@@ -476,12 +483,12 @@
       drawDashedLine(ctx, startX, (startY + boxHeight / 3 * 2), (startX + boxWidth), (startY + boxHeight / 3 * 2));
       drawDashedLine(ctx, (startX + boxWidth / 3), startY, (startX + boxWidth / 3), (startY + boxHeight));
       drawDashedLine(ctx, (startX + boxWidth / 3 * 2), startY, (startX + boxWidth / 3 * 2), (startY + boxHeight));
-      
+
       // 绘制 4 个点
       ctx.fillStyle = CropperColor;
-      for(var i = 0; i < points.length; i++) {
+      for (var i = 0; i < points.length; i++) {
         drawArc(ctx, points[ i ].x, points[ i ].y, 3);
-      } 
+      }
     },
 
     drawSourceImage: function () {
@@ -489,25 +496,27 @@
       var sourceWidth = me.image.width;
       var sourceHeight = me.image.height;
 
-      if (sourceWidth < me.canvasWidth
-        && sourceHeight < me.canvasHeight
+      var canvasWidth = me.canvasWidth * RATIO - CHECKED_AREA_SIZE;
+      var canvasHeight = me.canvasHeight * RATIO - CHECKED_AREA_SIZE;
+
+      if (sourceWidth < canvasWidth
+        && sourceHeight < canvasHeight
       ) {
-        throw new Error('image is smaller than ' + me.canvasWidth + '*' + me.canvasHeight);
-        return;
+        throw new Error('image is smaller than ' + canvasWidth + '*' + canvasHeight);
       }
 
       var radio = sourceWidth / sourceHeight;
-      if (sourceWidth > me.canvasWidth) {
-        sourceWidth = me.canvasWidth;
+      if (sourceWidth > canvasWidth) {
+        sourceWidth = canvasWidth;
         sourceHeight = sourceWidth / radio;
       }
-      if (sourceHeight > me.canvasHeight) {
-        sourceHeight = me.canvasHeight;
+      if (sourceHeight > canvasHeight) {
+        sourceHeight = canvasHeight;
         sourceWidth = sourceWidth * radio;
       }
 
-      var startX = (me.canvasWidth - sourceWidth) / 2;
-      var startY = (me.canvasHeight - sourceHeight) / 2;
+      var startX = (canvasWidth - sourceWidth + CHECKED_AREA_SIZE) / 2;
+      var startY = (canvasHeight - sourceHeight + CHECKED_AREA_SIZE) / 2;
       
       me.ctx.drawImage(
         me.image,
@@ -558,12 +567,15 @@
       var me = this;
       var canvasElement = document.createElement('canvas');
 
-      canvasElement.width = me.canvasWidth;
-      canvasElement.height = me.canvasHeight;
+      canvasElement.style.width = me.canvasWidth;
+      canvasElement.style.height = me.canvasHeight;
+      canvasElement.width = me.canvasWidth * RATIO;
+      canvasElement.height = me.canvasHeight * RATIO;
+
       canvasElement.style.backgroundColor = 'transparent';
       canvasElement.style.border = '1px solid #efefec';
-      me.container.append(canvasElement);
-
+      me.container.append(canvasElement); 
+      me.container.style.userSelect = 'none';
       me.canvas = canvasElement;
       me.ctx = me.canvas.getContext('2d');
 
@@ -572,3 +584,5 @@
   };
 
   window.Cropper = Cropper;
+
+})();
