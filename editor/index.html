@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
+  <title>
+    editor
+  </title>
+</head>
+<body>
+
+  <button> 
+    获取
+  </button>
+  <div id="editor">
+    <p>Hello World!</p>
+  </div>
+
+  <script src="https://cdn.quilljs.com/1.0.0/quill.js"></script>
+  <script>
+    window.editor = new Quill(
+      '#editor', 
+      {
+        modules: { 
+          ImageResize: {},
+          ImageExtend: {
+            loading: true,
+            name: 'img',
+            size: 2,  // 单位为M, 1M = 1024KB
+            action: '/12',
+            headers: (xhr) => {
+            },
+            response: (res) => {
+              return res.info
+            }
+          },
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+            ['blockquote', 'code-block'],
+
+            [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+            [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+            [{ 'direction': 'rtl' }],                         // text direction
+
+            [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+            [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+            [{ 'font': [] }],
+            [{ 'align': [] }],
+            ['image'],
+            ['clean']                                         // remove formatting button
+          ],
+          
+          imageUploader: {
+            upload: function (file) {
+              debugger
+              // return a Promise that resolves in a link to the uploaded image
+              return new Promise((resolve, reject) => {
+                const fd = new FormData();
+                fd.append("upload_file", file);
+
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", `/adpp`, true);
+                xhr.onload = () => {
+                  if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    resolve(response.file_path); // Must resolve as a link to the image
+                  }
+                };
+                xhr.send(fd);
+              });
+            }
+          }
+        },
+        theme: 'snow',
+      }
+    );
+
+  </script>
+</body>
+</html>
