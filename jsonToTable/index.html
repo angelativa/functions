@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>
+    title
+  </title>
+</head>
+<body>
+  <textarea id="json">
+    {
+      "requires": true,
+      "lockfileVersion": 1,
+      "dependencies": {
+        "bellc": {
+          "version": "1.0.0",
+          "resolved": "https://registry.npmjs.org/bellc/-/bellc-1.0.0.tgz",
+          "integrity": "sha512-XK0p14g51qsdJCWosNi6iyIS+1VhYQB/Q0R/RVYNo4L4RKXHulpW0xShRXDRHfEELFyk+XJokhLmkIUlxvw4qA=="
+        }
+      }
+    }
+
+  </textarea>
+  <table>
+    <tr>
+      <th>描述</th>
+      <th>描述</th>
+      <th>描述</th>
+    <tr>
+    <tr><td>requires</td><td>true</td></tr><tr><td>lockfileVersion</td><td>1</td></tr><tr><td>dependencies</td><td>[object Object]</td></tr>
+  </table>
+
+  <button id="getJson">
+    获取
+  </button>
+  <script type="text/javascript">
+    document.getElementById('getJson').onclick = function () {
+      var json = document.getElementById('json').value;
+      try {
+        json = JSON.parse(json);
+        var html = '';
+        for (var key in json) {
+          var item = json[ key ];
+          var line = '<tr><td>'
+              + key
+              + '</td>'
+              + '<td>'
+              + item
+              + '</td><td></td></tr>';
+          html += line;
+        }
+        console.log(html);
+      }
+      catch(err) {
+        console.log(err);
+      }
+    }
+  </script>
+</body>
+</html>
